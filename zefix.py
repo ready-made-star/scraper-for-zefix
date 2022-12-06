@@ -11,9 +11,19 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
+import chromedriver_autoinstaller
+
+chromedriver_autoinstaller.install()
+proxies={
+    "http": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/",
+    "https": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/"
+}
+chrome_options = Options()
+chrome_options.add_argument('--proxy-server=%s' % proxies)
 number = [4533, 108978, 224594, 393159]
-driver = webdriver.Chrome(executable_path='./chromedriver.exe')
+driver = webdriver.Chrome(options = chrome_options)
 driver.maximize_window()
 base_url="https://www.zefix.admin.ch/fr/search/entity/list/firm/{}"
 # /html/body/zfx-root/main/zfx-entity/zfx-firm/div/div[2]/a[1]
@@ -48,8 +58,23 @@ for x in number:
         
 for y in external_url:
     driver.get(y)
-    table_element = driver.find_element(By.CLASS_NAME, "personen")
-    tr_element = table_element.find_element(By.TAG_NAME, "tr").text
-    print(tr_element)
-    # row_element = table_element.
+    table_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "personen")))
+    tr_element = table_element.find_elements(By.TAG_NAME, "tr")
+    n=0
+    for x in tr_element:
+        row = []
+        if(x.text):
+            n=n+1
+            tds = x.find_elements(By.TAG_NAME, "td")
+            for y in tds:
+                td = y.text
+                print(td)
+                row.append(td)
+                
+            with open('event3.csv', 'a', encoding='utf-8', newline='') as f_object:
+
+                product_row = writer(f_object)
+                product_row.writerow(row)
+                f_object.close()
+
     
