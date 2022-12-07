@@ -24,7 +24,7 @@ from datetime import date
 number = [4533, 108978, 224594, 393159]
 today = date.today()
 id = ['CHE-103.058.551','CHE-103.887.688', 'CHE-100.687.182','CHE-105.984.411']
-driver = webdriver.Chrome(executable_path='./chromedriver.exe')
+driver = webdriver.Chrome(executable_path='/usr/local/bin/chromedriver')
 # driver = webdriver.Chrome(chrome_options = chrome_options, executable_path='./chromedriver.exe')
 driver.maximize_window()
 base_url="https://www.zefix.admin.ch/fr/search/entity/list/firm/{}"
