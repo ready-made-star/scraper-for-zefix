@@ -15,12 +15,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import date
 
-# proxies={
-#     "http": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/",
-#     "https": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/"
-# }
-# chrome_options = webdriver.ChromeOptions()
-# chrome_options.add_argument('--proxy-server=%s' % proxies)
 number = [4533, 108978, 224594, 393159]
 today = date.today()
 id = ['CHE-103.058.551','CHE-103.887.688', 'CHE-100.687.182','CHE-105.984.411']
