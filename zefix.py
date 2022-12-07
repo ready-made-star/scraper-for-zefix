@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import json
+import time
 from csv import writer
 from lib2to3.pgen2 import driver
 from urllib import response
@@ -14,12 +15,24 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import date
+from seleniumwire import webdriver
 
+options={
+    'proxy':{
+        "http": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/",
+        "https": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/",
+        "no_proxy": 'localhost,127.0.0.1'
+
+    }
+}
+# PROXY = "23.23.23.23:3128"
+# chrome_options = webdriver.ChromeOptions()
+# chrome_options.add_argument('--proxy-server=%s' % proxies)
 number = [4533, 108978, 224594, 393159]
 today = date.today()
 id = ['CHE-103.058.551','CHE-103.887.688', 'CHE-100.687.182','CHE-105.984.411']
-driver = webdriver.Chrome(executable_path='/usr/local/bin/chromedriver')
-# driver = webdriver.Chrome(chrome_options = chrome_options, executable_path='./chromedriver.exe')
+# driver = webdriver.Chrome(executable_path='/usr/local/bin/chromedriver')
+driver = webdriver.Chrome(seleniumwire_options=options)
 driver.maximize_window()
 base_url="https://www.zefix.admin.ch/fr/search/entity/list/firm/{}"
 # /html/body/zfx-root/main/zfx-entity/zfx-firm/div/div[2]/a[1]
@@ -33,6 +46,7 @@ n = 0
 for x in number:
     main_url=base_url.format(x)
     driver.get(main_url)
+    # time.sleep(3000)
     # external_url.append(driver.find_element(By.XPATH, '/html/body/zfx-/main/zfx-entity/zfx-firm/div/div[2]/a[1]').get_attribute('href'))
 
     companyAction_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'companyActions')))
@@ -51,7 +65,7 @@ for x in number:
         for item in items:
 
             row.append(item.text)
-        with open('event3.csv', 'a', encoding='utf-8', newline='') as f_object:
+        with open('result.csv', 'a', encoding='utf-8', newline='') as f_object:
 
             product_row = writer(f_object)
             product_row.writerow(row)
@@ -82,7 +96,7 @@ for y in external_url:
                 print(td)
                 row.append(td)
                 
-            with open('event3.csv', 'a', encoding='utf-8', newline='') as f_object:
+            with open('result.csv', 'a', encoding='utf-8', newline='') as f_object:
 
                 product_row = writer(f_object)
                 product_row.writerow(row)
