@@ -15,13 +15,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 import chromedriver_autoinstaller
 
-chromedriver_autoinstaller.install()
-proxies={
-    "http": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/",
-    "https": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/"
-}
-chrome_options = Options()
-chrome_options.add_argument('--proxy-server=%s' % proxies)
 number = [4533, 108978, 224594, 393159]
 driver = webdriver.Chrome(options = chrome_options)
 driver.maximize_window()
