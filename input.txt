@@ -1,4 +1,4 @@
-CHE-100.005.736
-CHE-100.013.049
-CHE-100.036.955
-CHE-100.065.862
+https://www.zefix.admin.ch/de/search/entity/list?name=CHE103058551&directLink=true
+https://www.zefix.admin.ch/de/search/entity/list?name=CHE103887688&directLink=true
+https://www.zefix.admin.ch/de/search/entity/list?name=CHE100687182&directLink=true
+https://www.zefix.admin.ch/de/search/entity/list?name=CHE105984411&directLink=true
