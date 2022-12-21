@@ -12,116 +12,99 @@ from datetime import date
 from webdriver_manager.chrome import ChromeDriverManager
 from seleniumwire import webdriver
 import numpy as np
-# from fake_useragent import UserAgent
 import undetected_chromedriver as uc
-
-
-# ua = UserAgent()
 
 options={
     'proxy':{
         "http": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/",
         "https": "http://arpkmgvp-rotate:jh3269dn5f@p.webshare.io:80/",
         "no_proxy": 'localhost,127.0.0.1'
-
     }
 }
 
 today = date.today()
 
-# chrome_options = Options()
-# chrome_options.add_argument('--headless')
-# chrome_options.add_argument('--no-sabdbox')
-# chrome_options.add_argument('--disable-dev-shm-usage')
-# chrome_option = uc.ChromeOptions()
-# driver = webdriver.Chrome(executable_path='./chromedriver.exe', seleniumwire_options=options)
-# driver.maximize_window()
 base_url="https://www.comparis.ch/carfinder/marktplatz?page={}"
 # /html/body/zfx-root/main/zfx-entity/zfx-firm/div/div[2]/a[1]
-external_url = []
-n = 0
-total_page=3
+total_page=100
 main_url = []
-
 #bypass function
 def seleniumUndetected():
+
+    # n = 0
     driver = uc.Chrome(version_main=108)
     driver.maximize_window()
+    datas = {}
+    count = 0
     for page_num in range(total_page):
+        car_url = []
         driver.get(base_url.format(page_num))
-        time.sleep(10)
+        time.sleep(15)
         for x in range(15):
             try:
-                ele = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div[1]/main/div/div[4]/div[1]/div[2]/div[{}]/a'.format(x+1))))
+                url_ele = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div[1]/main/div/div[4]/div[1]/div[2]/div[{}]/a'.format(x+1))))
+                make_ele = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div[1]/main/div/div[4]/div[1]/div[2]/div[{}]/a/div/div[2]/div[1]/h2/span[1]'.format(x+1)))).text
+                model_ele = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div[1]/main/div/div[4]/div[1]/div[2]/div[{}]/a/div/div[2]/div[1]/h2/span[3]'.format(x+1)))).text
+
             except:
-                ele= ''
-            if(ele != ''):
-                print(ele.get_attribute('href'))
-        print("next page")
+                url_ele= ''
+                make_ele = ''
+                model_ele = ''
+
+            if(url_ele != ''):
+                car_url.append([url_ele.get_attribute('href'), make_ele, model_ele])
+
+        for car, make, model in car_url:
+
+        # if(1):
+        # car = 'https://www.comparis.ch/carfinder/marktplatz/details/show/29033254'
+            driver.get(car)
+            print(car)
+            data = {}
+            item= WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, 'attributes-grid')))
+            items = item.find_elements(By.CLASS_NAME, 'column')
+            data["URLs"] = car
+            try:
+                data["data_posted"] = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-section-id"]/section/div/div/div/div[2]/div[1]/div[2]/ul/li[1]'))).text.replace('Erstmals gefunden am ', '').replace('\n', '')
+            except:
+                data["data_posted"] = ''
+            try:
+                data["mileage"] = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-section-id"]/section/div/div/div/div[2]/div[1]/div[3]/b/ul/li[3]'))).text.replace('Km-Stand: ', '').replace('km', '').strip()
+            except:
+                data["mileage"] = ''
+            try:
+                data["makename"] = make
+                data["modelname"] = model
+            except:
+                data["makename"] = ''
+                data["modelname"] = ''
+            try:
+                data["firstreg"] = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-section-id"]/section/div/div/div/div[2]/div[1]/div[3]/b/ul/li[2]'))).text.replace('Erstzulassung: ', '')
+            except:
+                data["firstreg"] = ''
+            data["DetailsSpecifications"] = {}
+
+            for i in items:
+                try:
+                    title = i.find_element(By.TAG_NAME, "dt").text
+                    data["DetailsSpecifications"][title] = i.find_element(By.TAG_NAME,'dd').text
+                except:
+                    data["DetailsSpecifications"][title] = ""
+
+            try:
+                data["price"] = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-section-id"]/section/div/div/div/div[2]/div[2]/div[1]/div[3]/div/div[1]/div/div/strong'))).text
+            except:
+                data["price"] = ''
+            data["dateExtracted"] = str(time.gmtime(time.time())[0]) + '-' + str(time.gmtime(time.time())[1]) + '-' + str(time.gmtime(time.time())[2])
+            
+            datas[count] = {}
+
+            datas[count].update(data)
+            count += 1
+        with open(f"{today}.json", "w", encoding='utf-8') as file:
+            json.dump(datas, file, indent=4, ensure_ascii=False)
 
 if __name__=="__main__":
     print('start')
     seleniumUndetected()
-
-# for x in range(total_page):
-    
-#     driver.get(base_url.format(x+1))
-    # print('a')
-    # time.sleep(10)
-    # external_url.append(driver.find_element(By.XPATH, '/html/body/zfx-/main/zfx-entity/zfx-firm/div/div[2]/a[1]').get_attribute('href'))
-    # main_url.append()
-    # item = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CLASS_NAME, 'css-a0dqn4 ehesakb1')))
-    # item = driver.find_elements(By.CLASS_NAME, "ehesakb1")
-    # print(item, '1')
-    # if item:
-
-    #     a_element = item.get_attribute("href")
-    #     main_url.append(a_element)
-    #     print(main_url)
-#     n = n + 1
-#     for i in item_length:
-#         # item = driver.find_elements(By.XPTH, ("//div[@class= 'shabPub')")[2])
-#         items = i.find_elements(By.TAG_NAME, "td")
-#         print(n)
-#         row = ['zefix', data[n-1], today.strftime("%d/%m/%Y")]
-#         for item in items:
-
-#             row.append(item.text)
-#         with open('result.csv', 'a', encoding='utf-8', newline='') as f_object:
-
-#             product_row = writer(f_object)
-#             product_row.writerow(row)
-#             f_object.close()
-
-# # second_row = ['hra', today.strftime("%d/%m/%Y")]
-# # with open('event3.csv', 'a', encoding='utf-8', newline='') as f_object:
-# #     product_row = writer(f_object)
-# #     product_row.writerow(second_row)   
-# m=0
-# for y in external_url:
-#     driver.get(y)
-#     table_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "personen")))
-#     tr_element = table_element.find_elements(By.TAG_NAME, "tr")
-#     n=0
-#     # with open('event3.csv', 'a', encoding='utf-8', newline='') as f_object:
-
-#     #     product_row = writer(f_object)
-#     #     product_row.writerow([y])
-#     m = m + 1
-#     for x in tr_element:
-#         row = ['hra',data[m-1], today.strftime("%d/%m/%Y")]
-#         if(x.text):
-#             n=n+1
-#             tds = x.find_elements(By.TAG_NAME, "td")
-#             for y in tds:
-#                 td = y.text
-#                 print(td)
-#                 row.append(td)
-                
-#             with open('result.csv', 'a', encoding='utf-8', newline='') as f_object:
-
-#                 product_row = writer(f_object)
-#                 product_row.writerow(row)
-#                 f_object.close()
-
-    
+  
